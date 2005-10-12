@@ -38,7 +38,7 @@
 <!ENTITY xhtmlmp.key "A">
 <!ENTITY xhtmlmp.label "Header">
 <!ENTITY xhtmlmp.extension.name "XHTML Mobile Profile">
-<!ENTITY xhtmlmp.extension.version "0.2.0">
+<!ENTITY xhtmlmp.extension.version "0.3.0">
 <!ENTITY xhtmlmp.author.name "Gareth Hunt">
 
 <!-- About -->
