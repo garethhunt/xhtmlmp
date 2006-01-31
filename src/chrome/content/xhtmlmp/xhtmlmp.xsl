@@ -35,13 +35,26 @@
    -
    - ***** END LICENSE BLOCK ***** -->
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-    version="1.0">
+  version="1.0">
 
-  <xsl:output method="html" version="1.0" encoding="UTF-8"
+  <!--<xsl:output method="html" version="1.0" encoding="UTF-8"
     doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"
-    doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN" />
+    doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN" />-->
 
   <xsl:template match="/">
-    <xsl:copy-of select="node()"/>
+    <xsl:choose>
+      <xsl:when test="html">
+        <xsl:apply-templates select="html"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:copy-of select="*"/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+  
+  <xsl:template match="html">
+    <html xmlns="http://www.w3.org/1999/xhtml">
+      <xsl:copy-of select="node()"/>
+    </html>
   </xsl:template>
 </xsl:stylesheet>

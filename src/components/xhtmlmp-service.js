@@ -72,14 +72,18 @@ function (aRequest, aContext) {
 XHTMLMPStreamConverter.prototype.onStopRequest =
 function (aRequest, aContext, aStatusCode) {
 
-    xhtmlmp_logMessage(this.data);
+    xhtmlmp_logMessage("this.data: " + this.data);
 
     // Strip leading whitespace
     this.data = this.data.replace (/^\s+/,'');
     
     // Strip out comments
-    this.data = this.data.replace (/<!--[.*]-->/,'');
+    this.data = this.data.replace (/<!(?:--.*?--\s*)?>/,'');
+    
+    // String out Doctype definition
 
+    xhtmlmp_logMessage("this.data: " + this.data);
+    
     // Parse the content into an XMLDocument
     // (NB 'new DOMParser()' doesn't work from within a component it seems)
     var parser =
@@ -270,5 +274,5 @@ var gConsoleService = Components.classes['@mozilla.org/consoleservice;1']
                     .getService(Components.interfaces.nsIConsoleService);
 
 function xhtmlmp_logMessage(aMessage) {
-  gConsoleService.logStringMessage('xhtmlmp: ' + aMessage);
+  //gConsoleService.logStringMessage('xhtmlmp: ' + aMessage);
 }
