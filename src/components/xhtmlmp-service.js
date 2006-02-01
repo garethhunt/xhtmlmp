@@ -16,7 +16,7 @@
  * are Copyright (C) 2004 the Initial Developer. All Rights Reserved.
  *
  * The Original Code has been modified to support XHTML mobile profile.
- * The modified code is Copyright (C) 2005 Gareth Hunt.
+ * The modified code is Copyright (C) 2006 Gareth Hunt.
  *
  * Contributor(s): 
  *
@@ -26,17 +26,12 @@
 
 /* components defined in this file */
 
-const XHTMLMPSTREAM_CONVERT_CONVERSION =
-    "?from=application/vnd.wap.xhtml+xml&to=*/*";
-const XHTMLMPSTREAM_CONVERTER_CONTRACTID =
-    "@mozilla.org/streamconv;1" + XHTMLMPSTREAM_CONVERT_CONVERSION;
-const XHTMLMPSTREAM_CONVERTER_CID =
-    Components.ID("{333c7e10-e060-4514-9e35-08d2183aee2d}");
+const XHTMLMPSTREAM_CONVERT_CONVERSION = "?from=application/vnd.wap.xhtml+xml&to=*/*";
+const XHTMLMPSTREAM_CONVERTER_CONTRACTID = "@mozilla.org/streamconv;1" + XHTMLMPSTREAM_CONVERT_CONVERSION;
+const XHTMLMPSTREAM_CONVERTER_CID = Components.ID("{333c7e10-e060-4514-9e35-08d2183aee2d}");
 
 /* application/vnd.wap.xhtml+xml -> text/html stream converter */
-function XHTMLMPStreamConverter ()
-{
-}
+function XHTMLMPStreamConverter () {}
 
 XHTMLMPStreamConverter.prototype.QueryInterface =
 function (iid) {
@@ -48,12 +43,10 @@ function (iid) {
         return this;
 
     throw Components.results.NS_ERROR_NO_INTERFACE;
-
 }
 
 // nsIRequest observer methods
-XHTMLMPStreamConverter.prototype.onStartRequest =
-function (aRequest, aContext) {
+XHTMLMPStreamConverter.prototype.onStartRequest = function (aRequest, aContext) {
 
     this.data = '';
 
@@ -66,11 +59,9 @@ function (aRequest, aContext) {
     xhtmlmp_logMessage(this.channel.contentType);
 
     this.listener.onStartRequest (this.channel, aContext);
-
 };
 
-XHTMLMPStreamConverter.prototype.onStopRequest =
-function (aRequest, aContext, aStatusCode) {
+XHTMLMPStreamConverter.prototype.onStopRequest = function (aRequest, aContext, aStatusCode) {
 
     xhtmlmp_logMessage("this.data: " + this.data);
 
@@ -80,96 +71,38 @@ function (aRequest, aContext, aStatusCode) {
     // Strip out comments
     this.data = this.data.replace (/<!(?:--.*?--\s*)?>/,'');
     
+    // Replace <html> with <html xmlns="http://www.w3.org/1999/xhtml">
+    this.data = this.data.replace (/<html>/,'<html xmlns="http://www.w3.org/1999/xhtml">');
+    
     // String out Doctype definition
 
     xhtmlmp_logMessage("this.data: " + this.data);
     
-    // Parse the content into an XMLDocument
-    // (NB 'new DOMParser()' doesn't work from within a component it seems)
-    var parser =
-        Components.classes['@mozilla.org/xmlextras/domparser;1']
-             .getService(Components.interfaces.nsIDOMParser);
-    var originalDoc = parser.parseFromString(this.data, "text/xml");
+    var targetDocument = "";
     
-    // Default XSLT stylesheet
-    var xslt = "chrome://xhtmlmp/content/xhtmlmp.xsl";
-
-    var roottag = originalDoc.documentElement;
-    if ((roottag.tagName == "parserError") ||
-        (roottag.namespaceURI == "http://www.mozilla.org/newlayout/xml/parsererror.xml")){
-        // Use error stylesheet
-        //var xslt = "chrome://xhtmlmp/content/errors.xsl";
+    if ( !(this.data.search(/^<\?xml version=['"]1.0['"] encoding=['"]UTF-8['"]\?>.*$/)) ) {
+    	targetDocument = "<?xml version='1.0' encoding='UTF-8'?>"
     }
-
-    // Find out what interface we need to use for document transformation
-    // (earlier builds used text/xsl)
-    var transformerType;
-    if (Components.classes["@mozilla.org/document-transformer;1?type=xslt"]) {
-        transformerType = "xslt";
-    } else {
-        transformerType = "text/xsl";
-    }
-    xhtmlmp_logMessage(transformerType);
     
-    var processor = Components.classes["@mozilla.org/document-transformer;1?type=" + transformerType]
-        .createInstance(Components.interfaces.nsIXSLTProcessor);
-
-    // Use an XMLHttpRequest object to load our own stylesheet.
-    var styleLoad =
-        Components.classes["@mozilla.org/xmlextras/xmlhttprequest;1"]
-        .createInstance(Components.interfaces.nsIXMLHttpRequest);
-    styleLoad.open ("GET", xslt, false); // synchronous load
-    styleLoad.overrideMimeType("text/xml");
-    styleLoad.send(undefined);
-    processor.importStylesheet (styleLoad.responseXML.documentElement);
-
-    // Get the transformed document
-    var transformedDocument = processor.transformToDocument (originalDoc);
+    var targetDocument = targetDocument + this.data;
     
-    var serializer =
-        Components.classes["@mozilla.org/xmlextras/xmlserializer;1"]
-        .createInstance (Components.interfaces.nsIDOMSerializer);
-        
-    xhtmlmp_logMessage(serializer.serializeToString(originalDoc));
-    xhtmlmp_logMessage(serializer.serializeToString(transformedDocument));
+    xhtmlmp_logMessage("targetDocument: " + targetDocument);
 
-    // and serialize it to XML
-    // This is a BIG HACK
-    var str = Components.classes["@mozilla.org/supports-string;1"].
-                   createInstance(Components.interfaces.nsISupportsString);
-    str.data = '';
-    var outputStream = {
-        write: function(buf, count) {
-           str.data += buf.substring(0,count);
-           return count;
-       }
-    };
-    serializer.serializeToStream (transformedDocument, outputStream, "UTF-8");
-    var targetDocument = "<?xml version='1.0' encoding='UTF-8'?>" + str.data;
-    
-    xhtmlmp_logMessage(targetDocument);
-
-    var sis =
-        Components.classes["@mozilla.org/io/string-input-stream;1"]
-        .createInstance(Components.interfaces.nsIStringInputStream);
+    var sis = Components.classes["@mozilla.org/io/string-input-stream;1"].createInstance(Components.interfaces.nsIStringInputStream);
     sis.setData (targetDocument, targetDocument.length);
 
     // Pass the data to the main content listener
     this.listener.onDataAvailable (this.channel, aContext, sis, 0, targetDocument.length);
-
     this.listener.onStopRequest (this.channel, aContext, aStatusCode);
-
 };
 
 // nsIStreamListener methods
-XHTMLMPStreamConverter.prototype.onDataAvailable =
-function (aRequest, aContext, aInputStream, aOffset, aCount) {
+XHTMLMPStreamConverter.prototype.onDataAvailable = function (aRequest, aContext, aInputStream, aOffset, aCount) {
 
     var si = Components.classes["@mozilla.org/scriptableinputstream;1"].createInstance();
     si = si.QueryInterface(Components.interfaces.nsIScriptableInputStream);
     si.init(aInputStream);
     this.data += si.read(aCount);
-
 }
 
 // nsIStreamConverter methods
@@ -201,8 +134,7 @@ function (aFromStream, aFromType, aToType, aCtxt) {
 /* stream converter factory object (XHTMLMPStreamConverter) */
 var XHTMLMPStreamConverterFactory = new Object();
 
-XHTMLMPStreamConverterFactory.createInstance =
-function (outer, iid) {
+XHTMLMPStreamConverterFactory.createInstance = function (outer, iid) {
     if (outer != null)
         throw Components.results.NS_ERROR_NO_AGGREGATION;
 
@@ -214,14 +146,11 @@ function (outer, iid) {
         return new XHTMLMPStreamConverter();
 
     throw Components.results.NS_ERROR_INVALID_ARG;
-
 }
 
 var XHTMLMPBrowserModule = new Object();
 
-XHTMLMPBrowserModule.registerSelf =
-function (compMgr, fileSpec, location, type)
-{
+XHTMLMPBrowserModule.registerSelf = function (compMgr, fileSpec, location, type) {
 
     var compMgr = compMgr.QueryInterface(Components.interfaces.nsIComponentRegistrar);
 
@@ -240,13 +169,9 @@ function (compMgr, fileSpec, location, type)
                             true, true);
 };
 
-XHTMLMPBrowserModule.unregisterSelf =
-function(compMgr, fileSpec, location)
-{
-}
+XHTMLMPBrowserModule.unregisterSelf = function(compMgr, fileSpec, location) {}
 
-XHTMLMPBrowserModule.getClassObject =
-function (compMgr, cid, iid) {
+XHTMLMPBrowserModule.getClassObject = function (compMgr, cid, iid) {
 
     if (cid.equals(XHTMLMPSTREAM_CONVERTER_CID))
         return XHTMLMPStreamConverterFactory;
@@ -255,12 +180,9 @@ function (compMgr, cid, iid) {
         throw Components.results.NS_ERROR_NOT_IMPLEMENTED;
 
     throw Components.results.NS_ERROR_NO_INTERFACE;
-    
 }
 
-XHTMLMPBrowserModule.canUnload =
-function(compMgr)
-{
+XHTMLMPBrowserModule.canUnload = function(compMgr) {
     return true;
 }
 
@@ -269,10 +191,32 @@ function NSGetModule(compMgr, fileSpec) {
     return XHTMLMPBrowserModule;
 }
 
-// A logger
-var gConsoleService = Components.classes['@mozilla.org/consoleservice;1']
-                    .getService(Components.interfaces.nsIConsoleService);
+// Logging preference
+const PREF_XHTMLMP_LOGGING = "xhtmlmp.config.logMessages";
 
+function getXHTMLMPLoggingPref() {
+    this.prefService = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefService);
+    this.prefService = this.prefService.getBranch("");
+    
+    // Set a default value
+    var prefValue = false;
+    
+    if (this.prefService.prefHasUserValue(PREF_XHTMLMP_LOGGING)) {
+        prefValue = this.prefService.getBoolPref(PREF_XHTMLMP_LOGGING);
+    } else {
+        // Create the preference with a default value
+        this.prefService.setBoolPref(PREF_XHTMLMP_LOGGING, false);
+    }
+    
+    return prefValue;
+}
+
+// A logger
+var gConsoleService = Components.classes['@mozilla.org/consoleservice;1'].getService(Components.interfaces.nsIConsoleService);
+
+// Log a message to the Javascript console
 function xhtmlmp_logMessage(aMessage) {
-  //gConsoleService.logStringMessage('xhtmlmp: ' + aMessage);
+    if (getXHTMLMPLoggingPref()) {
+        gConsoleService.logStringMessage('xhtmlmp: ' + aMessage);
+    }
 }
