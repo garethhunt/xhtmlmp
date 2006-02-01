@@ -52,7 +52,7 @@
   <RDF:Description about="urn:mozilla:package:xhtmlmp"
     chrome:displayName="XHTML Mobile Profile"
     chrome:author="Gareth Hunt"
-    chrome:authorURL="http://www.garethhunt.com/"
+    chrome:authorURL="http://xhtmlmp.mozdev.org/"
     chrome:extension="true"
     chrome:description="Allow the browser to render XHTML Mobile Profile content"
     chrome:name="xhtmlmp"
