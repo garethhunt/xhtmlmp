@@ -1,0 +1,4 @@
+# Firefox / Flock
+content	xhtmlmp	jar:chrome/xhtmlmp.jar!/content/
+
+locale	xhtmlmp	en-US	jar:chrome/xhtmlmp.jar!/locale/en-US/

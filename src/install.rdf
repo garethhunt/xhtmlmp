@@ -43,7 +43,7 @@
         <em:aboutURL>chrome://xhtmlmp/content/about/about.xul</em:aboutURL>
         <em:creator>Gareth Hunt</em:creator>
         <em:description>Allows XHTML Mobile Profile to be displayed in the browser.</em:description>
-        <em:homepageURL>http://www.garethhunt.com/</em:homepageURL>
+        <em:homepageURL>@build.homepage@</em:homepageURL>
         <!-- <em:iconURL>chrome://xhtmlmp/content/logo.gif</em:iconURL> -->
         <em:iconURL></em:iconURL>
         <em:id>{8ea9957e-2953-402f-80e0-bceb5f169d6f}</em:id>
@@ -53,9 +53,9 @@
         <em:version>@build.version@</em:version>
         <em:file>
             <Description about="urn:mozilla:extension:file:xhtmlmp.jar">
-                <em:locale>locale/en-US/xhtmlmp/</em:locale>
-                <em:package>content/xhtmlmp/</em:package>
-                <!-- <em:skin>skin/classic/xhtmlmp/</em:skin> -->
+                <em:locale>locale/en-US/</em:locale>
+                <em:package>content/</em:package>
+                <!-- <em:skin>skin/classic/</em:skin> -->
             </Description>
         </em:file>
         <em:targetApplication>
