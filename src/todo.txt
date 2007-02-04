@@ -1,7 +1,10 @@
 In no particular order:
-
-* Add (XHTML-MP) into the page title
-* Add a small screen rendering mode, that can switch browser size
+* Sidebar to manipulate the display window (Mobile simulator)
+* Set the height
+* Set the width
+* Allow scrolling within the small screen window
+* Save the settings
+* Help file (tab within sidebar)
 
 Please make some suggestions:
 http://xhtmlmp.mozdev.org/list.html
