@@ -38,7 +38,7 @@
 <!ENTITY xhtmlmp.key "A">
 <!ENTITY xhtmlmp.label "Header">
 <!ENTITY xhtmlmp.extension.name "XHTML Mobile Profile">
-<!ENTITY xhtmlmp.extension.version "0.3.0">
+<!ENTITY xhtmlmp.extension.version "@build.version@">
 <!ENTITY xhtmlmp.author.name "Gareth Hunt">
 
 <!-- About -->
@@ -46,7 +46,7 @@
 <!ENTITY xhtmlmp.about.home.page "Home Page">
 <!ENTITY xhtmlmp.about.label "About...">
 <!ENTITY xhtmlmp.about.title "About XHTML Mobile Profile">
-<!ENTITY xhtmlmp.about.url "http://www.garethhunt.com/">
+<!ENTITY xhtmlmp.about.url "@build.homepage@">
 
 
 <!-- Options -->
