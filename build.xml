@@ -15,6 +15,7 @@
 	
 	<!-- Filters used for token replacement -->
 	<filter token="build.version" value="${build.version}"/>
+	<filter token="build.homepage" value="${build.homepage}"/>
 	
     <description>
         XHTMLMP is an extension for the Mozilla Firefox web browser
@@ -49,16 +50,20 @@
 
 	<target name="prepare" depends="clean" description="Ensures that the required target directories are created">
 		<mkdir dir="${build.targetdir}"/>
+		<mkdir dir="${build.targetdir}/chrome"/>
 		<mkdir dir="${build.targetdir}/jar/chrome"/>
 		<mkdir dir="${build.targetdir}/xpi"/>
 	</target>
 
 	<target name="jar" depends="prepare" description="Creates the extension jar">
-		<!-- Exclude errors.xsl for now -->
+		<copy todir="${build.targetdir}/chrome/" filtering="true">
+			<fileset dir="${build.srcdir}/chrome" includes="**"/>
+		</copy>
+		
         <jar destfile="${build.targetdir}/jar/chrome/${build.mozilla.firefox.extension.name}.jar"
-        	 basedir="${build.srcdir}/chrome"
-        	 includes="**"
-        	 excludes="**/errors.xsl"/>
+        	 basedir="${build.targetdir}/chrome"
+        	 includes="**"/>
+		
 		<copy todir="${build.targetdir}/jar/" filtering="true">
 			<fileset dir="${build.srcdir}" includes="*.*"/>
 		</copy>
