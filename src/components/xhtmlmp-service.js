@@ -21,7 +21,7 @@
  * Contributor(s): 
  *
  * This file contains the content handler for converting content of type
- * text/vnd.wap.wml (WMLStreamConverter)
+ * application/vnd.wap.xhttml+xml (XHTMLMPStreamConverter)
  */
 
 /* components defined in this file */
@@ -74,12 +74,14 @@ XHTMLMPStreamConverter.prototype.onStopRequest = function (aRequest, aContext, a
     // Replace <html> with <html xmlns="http://www.w3.org/1999/xhtml">
     this.data = this.data.replace (/<html>/,'<html xmlns="http://www.w3.org/1999/xhtml">');
     
-    // String out Doctype definition
-
+    // Prepend </title> with [XHTML-MP]
+    this.data = this.data.replace (/<\/title>/,' [XHTML-MP]</title>');
+    
     xhtmlmp_logMessage("this.data: " + this.data);
     
     var targetDocument = "";
     
+    // If there is no XML declaration, add it
     if ( !(this.data.search(/^<\?xml version=['"]1.0['"] encoding=['"]UTF-8['"]\?>.*$/)) ) {
     	targetDocument = "<?xml version='1.0' encoding='UTF-8'?>"
     }
