@@ -1,3 +1,6 @@
-There is nothing to do at the moment.  Make some suggestions:
+In no particular order:
+
+* Add (XHTML-MP) into the page title
+* Add a small screen rendering mode, that can switch browser size
 
 http://xhtmlmp.mozdev.org/list.html
