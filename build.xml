@@ -80,6 +80,7 @@
 			<fileset dir="${build.targetdir}/jar" includes="components/*.*"/> -->
 			<fileset dir="${build.targetdir}/jar" includes="**/*.*"/>
 			<fileset dir="${build.srcdir}" includes="components/*.*"/>
+			<fileset dir="${build.srcdir}" includes="defaults/**"/>
 		</zip>
 		
     </target>
@@ -89,12 +90,13 @@
 	<target name="debug" depends="jar">
 		<echo>Debug deployment</echo>
 		
-	    <copy todir="${build.mozilla.firefox.extension.home}/${build.mozilla.firefox.extension.uuid}" overwrite="false">
+	    <copy todir="${build.mozilla.firefox.extension.home}/${build.mozilla.firefox.extension.uuid}" overwrite="true">
 	    	<fileset dir="${build.targetdir}/jar"/>
 	    </copy>
 		
-	    <copy todir="${build.mozilla.firefox.extension.home}/${build.mozilla.firefox.extension.uuid}" overwrite="false">
+	    <copy todir="${build.mozilla.firefox.extension.home}/${build.mozilla.firefox.extension.uuid}" overwrite="true">
 			<fileset dir="${build.srcdir}" includes="components/*.*"/>
+			<fileset dir="${build.srcdir}" includes="defaults/**"/>
 	    </copy>
 	</target>
 </project>

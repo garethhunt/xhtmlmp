@@ -1,0 +1,20 @@
+-- Release Notes --
+
+Release 0.5.0, 1 July 2007
+
+* Added support for XHTML encoded in multipart/mixed packacging
+
+--
+Release 0.3.7, 2 March 2007
+
+* Add [XHTML-MP] to the title of the document so that users know the addon has executed
+
+--
+Release 0.3.6, 12 October 2006
+
+* Added support for Firefox 2.0
+
+--
+Release 0.3.5, 18 February 2006
+
+* When the XHTML namespace in not in the root html element, it is added in.  This ensures application/xhtml+xml content will render correctly.

@@ -15,20 +15,20 @@
  * <matthew@mjwilson.demon.co.uk>. Portions created by the Initial Developer
  * are Copyright (C) 2004 the Initial Developer. All Rights Reserved.
  *
- * The Original Code has been modified to support XHTML mobile profile.
+ * The Original Code has been modified to support Multipart/Mixed content.
  * The modified code is Copyright (C) 2006 Gareth Hunt.
  *
  * Contributor(s): 
  *
  * This file contains the content handler for converting content of type
- * application/vnd.wap.xhttml+xml (XHTMLMPStreamConverter)
+ * multipart/mixed (MultipartMixedStreamConverter)
  */
 
-/* application/vnd.wap.xhtml+xml -> text/html stream converter */
-function XHTMLMPStreamConverter () {}
+/* multipart/mixed -> text/xml stream converter */
+function MultipartMixedStreamConverter() {}
 
-XHTMLMPStreamConverter.prototype = {
-
+MultipartMixedStreamConverter.prototype = {
+  
   _logger: null,
   _initialised: false,
   
@@ -37,22 +37,21 @@ XHTMLMPStreamConverter.prototype = {
     this._logger = Components.classes["@xhtmlmp.mozdev.org/logger;1"].getService(Components.interfaces.nsISupports).wrappedJSObject
   },
   
-  QueryInterface: function (iid) {
-
+  QueryInterface: function(iid) {
     if (iid.equals(Components.interfaces.nsISupports) ||
       iid.equals(Components.interfaces.nsIStreamConverter) ||
       iid.equals(Components.interfaces.nsIStreamListener) ||
       iid.equals(Components.interfaces.nsIRequestObserver))
-      return this;
+      return this
 
     throw Components.results.NS_ERROR_NO_INTERFACE
   },
-
+  
   // nsIRequest::onStartRequest
   onStartRequest: function(aRequest, aContext) {
     if (!this._initialised) { this.init() }
     this._logger.debug("Entered onStartRequest")
-
+    
     this.data = ''
 
     this.uri = aRequest.QueryInterface (Components.interfaces.nsIChannel).URI.spec
@@ -66,12 +65,23 @@ XHTMLMPStreamConverter.prototype = {
     this.listener.onStartRequest (this.channel, aContext)
     this._logger.debug("Exiting onStartRequest")
   },
-
+  
   // nsIRequest::onStopRequest
   onStopRequest: function (aRequest, aContext, aStatusCode) {
     this._logger.debug("this.data: " + this.data)
     var tempData = this.data
 
+    // Strip out multipart/mixed delimiters and information
+    tempData = tempData.replace (/--next\.part.*/g,'')
+    tempData = tempData.replace (/Content-Location.*/g,'')
+    tempData = tempData.replace (/Content-Type.*/g,'')
+    tempData = tempData.replace (/Content-Transfer-Encoding.*/g,'')
+    
+    // Remove everything after the closing html tag
+    var htmlEndIndex = tempData.search(/<\/html>/)
+    this._logger.debug("Index of end tag: " + htmlEndIndex)
+    tempData = tempData.substring(0, htmlEndIndex + 7)
+    
     // Strip leading whitespace
     tempData = tempData.replace (/^\s+/,'')
     
@@ -82,7 +92,7 @@ XHTMLMPStreamConverter.prototype = {
     tempData = tempData.replace (/<html>/,'<html xmlns="http://www.w3.org/1999/xhtml">')
     
     // Prepend </title> with [XHTML-MP]
-    tempData = tempData.replace (/<\/title>/,' [XHTML-MP]</title>')
+    tempData = tempData.replace (/<\/title>/,' [Multipart/Mixed]</title>')
     
     this.data = tempData
     this._logger.debug("this.data: " + this.data)
@@ -105,7 +115,7 @@ XHTMLMPStreamConverter.prototype = {
     this.listener.onDataAvailable (this.channel, aContext, sis, 0, targetDocument.length)
     this.listener.onStopRequest (this.channel, aContext, aStatusCode)
   },
-
+  
   // nsIStreamListener methods
   onDataAvailable: function (aRequest, aContext, aInputStream, aOffset, aCount) {
     this._logger.debug("Entered onDataAvailable")
@@ -128,13 +138,13 @@ XHTMLMPStreamConverter.prototype = {
   }
 }
 
-var XHTMLMPBrowserModule = {
-
-  cid: Components.ID("{333c7e10-e060-4514-9e35-08d2183aee2d}"),
-  conversion: "?from=application/vnd.wap.xhtml+xml&to=*/*",
+var MultipartMixedBrowserModule = {
+  
+  cid: Components.ID("{1d880b4f-d091-439d-b3c4-f175966c9341}"),
+  conversion: "?from=multipart/mixed&to=*/*",
   contractID: "@mozilla.org/streamconv;1",
-  name: "XHTMLMP to HTML stream converter",
-
+  name: "Multipart/Mixed to HTML stream converter",
+  
   // This factory attribute returns an anonymous class 
   factory: {
     createInstance: function (outer, iid) {
@@ -146,42 +156,42 @@ var XHTMLMPBrowserModule = {
         iid.equals(Components.interfaces.nsIStreamListener) ||
         iid.equals(Components.interfaces.nsIRequestObserver)) {
         
-        return new XHTMLMPStreamConverter()
+        return new MultipartMixedStreamConverter()
       }
       
       throw Components.results.NS_ERROR_NO_INTERFACE
     }
   },
-
+  
   registerSelf: function (compMgr, fileSpec, location, type) {
-
+  
     compMgr = compMgr.QueryInterface(Components.interfaces.nsIComponentRegistrar)
     compMgr.registerFactoryLocation(this.cid, this.name, this.contractID + this.conversion, fileSpec, location, type)
-
+    
     var catman = Components.classes["@mozilla.org/categorymanager;1"].getService(Components.interfaces.nsICategoryManager)
     catman.addCategoryEntry(this.contractID, this.conversion, this.name, true, true)
   },
-
+  
   unregisterSelf: function(compMgr, fileSpec, location) {
     aCompMgr = aCompMgr.QueryInterface(Components.interfaces.nsIComponentRegistrar)
     aCompMgr.unregisterFactoryLocation(this.cid, aLocation)
   },
-
+  
   getClassObject: function (compMgr, cid, iid) {
-
+  
     if (cid.equals(this.cid))
       return this.factory
-
+    
     if (!iid.equals(Components.interfaces.nsIFactory))
       throw Components.results.NS_ERROR_NOT_IMPLEMENTED
-
+    
     throw Components.results.NS_ERROR_NO_INTERFACE
   },
-
+  
   canUnload: function(compMgr) { return true }
 }
 
 /* entrypoint */
 function NSGetModule(compMgr, fileSpec) {
-    return XHTMLMPBrowserModule
+    return MultipartMixedBrowserModule
 }

@@ -1,0 +1,1 @@
+pref("extensions.xhtmlmp.config.log.level", 0);
