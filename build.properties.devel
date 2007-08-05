@@ -12,4 +12,4 @@ build.targetdir=${build.basedir}/target
 build.mozilla.firefox.home=C:/Program Files/Mozilla Firefox
 build.mozilla.firefox.extension.name=xhtmlmp
 build.mozilla.firefox.extension.uuid={8ea9957e-2953-402f-80e0-bceb5f169d6f}
-build.mozilla.firefox.extension.home=${user.home}/Application Data/Mozilla/Firefox/Profiles/66pkm5jb.devel/extensions
+build.mozilla.firefox.extension.home=${user.home}/Application Data/Mozilla/Firefox/Profiles/uhimu98v.devel/extensions
