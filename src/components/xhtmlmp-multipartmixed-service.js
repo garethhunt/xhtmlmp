@@ -72,7 +72,7 @@ MultipartMixedStreamConverter.prototype = {
     var tempData = this.data
 
     // Strip out multipart/mixed delimiters and information
-    tempData = tempData.replace (/--next\.part.*/g,'')
+    tempData = tempData.replace (/\s--.*/g,'')
     tempData = tempData.replace (/Content-Location.*/g,'')
     tempData = tempData.replace (/Content-Type.*/g,'')
     tempData = tempData.replace (/Content-Transfer-Encoding.*/g,'')
