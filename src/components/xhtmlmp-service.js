@@ -90,9 +90,9 @@ XHTMLMPStreamConverter.prototype = {
     var targetDocument = ""
     
     // If there is no XML declaration, add it
-    if ( !(this.data.search(/^<\?xml version=['"]1.0['"] encoding=['"]UTF-8['"]\?>.*$/)) ) {
+    /* if ( !(this.data.search(/^<\?xml version=['"]1.0['"] encoding=['"]UTF-8['"]\?>.*$/)) ) {
     	targetDocument = "<?xml version='1.0' encoding='UTF-8'?>"
-    }
+    } */
     
     var targetDocument = targetDocument + this.data
     
