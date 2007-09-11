@@ -71,12 +71,19 @@ MultipartMixedStreamConverter.prototype = {
     this._logger.debug("this.data: " + this.data)
     var tempData = this.data
 
+    // Strip out comments
+    tempData = tempData.replace (/<!(?:--.*?--\s*)?>/g,'')
+	
+    this._logger.debug("stripped out comments: " + tempData)
+	
     // Strip out multipart/mixed delimiters and information
     tempData = tempData.replace (/\s--.*/g,'')
     tempData = tempData.replace (/Content-Location.*/g,'')
     tempData = tempData.replace (/Content-Type.*/g,'')
     tempData = tempData.replace (/Content-Transfer-Encoding.*/g,'')
     
+    this._logger.debug("stripped out multipart package boundaries: " + tempData)
+	
     // Remove everything after the closing html tag
     var htmlEndIndex = tempData.search(/<\/html>/)
     this._logger.debug("Index of end tag: " + htmlEndIndex)
@@ -84,9 +91,6 @@ MultipartMixedStreamConverter.prototype = {
     
     // Strip leading whitespace
     tempData = tempData.replace (/^\s+/,'')
-    
-    // Strip out comments
-    tempData = tempData.replace (/<!(?:--.*?--\s*)?>/,'')
     
     // Replace <html> with <html xmlns="http://www.w3.org/1999/xhtml">
     tempData = tempData.replace (/<html>/,'<html xmlns="http://www.w3.org/1999/xhtml">')
