@@ -1,8 +1,18 @@
 -- Release Notes --
 
+Release 0.5.2, 29 August 2007
+
+* Fixes a defect where comments are incorrectly stripped out by the Multipart Mixed handler
+
+--
+Release 0.5.1, 29 August 2007
+
+* Fixes a defect where the XML declaration was output by the Multipart Mixed handler when one already exists in the content
+
+--
 Release 0.5.0, 1 July 2007
 
-* Added support for XHTML encoded in multipart/mixed packacging
+* Added support for XHTML encoded in multipart/mixed packaging
 
 --
 Release 0.3.7, 2 March 2007
