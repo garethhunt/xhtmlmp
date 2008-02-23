@@ -145,7 +145,8 @@ MultipartMixedStreamConverter.prototype = {
 var MultipartMixedBrowserModule = {
   
   cid: Components.ID("{1d880b4f-d091-439d-b3c4-f175966c9341}"),
-  conversion: "?from=multipart/mixed&to=*/*",
+  conversion1: "?from=multipart/mixed&to=*/*",
+  conversion2: "?from=application/vnd.wap.multipart.mixed&to=*/*",
   contractID: "@mozilla.org/streamconv;1",
   name: "Multipart/Mixed to HTML stream converter",
   
@@ -170,7 +171,8 @@ var MultipartMixedBrowserModule = {
   registerSelf: function (compMgr, fileSpec, location, type) {
   
     compMgr = compMgr.QueryInterface(Components.interfaces.nsIComponentRegistrar)
-    compMgr.registerFactoryLocation(this.cid, this.name, this.contractID + this.conversion, fileSpec, location, type)
+    compMgr.registerFactoryLocation(this.cid, this.name, this.contractID + this.conversion1, fileSpec, location, type)
+    compMgr.registerFactoryLocation(this.cid, this.name, this.contractID + this.conversion2, fileSpec, location, type)
     
     var catman = Components.classes["@mozilla.org/categorymanager;1"].getService(Components.interfaces.nsICategoryManager)
     catman.addCategoryEntry(this.contractID, this.conversion, this.name, true, true)
