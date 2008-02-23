@@ -175,7 +175,8 @@ var MultipartMixedBrowserModule = {
     compMgr.registerFactoryLocation(this.cid, this.name, this.contractID + this.conversion2, fileSpec, location, type)
     
     var catman = Components.classes["@mozilla.org/categorymanager;1"].getService(Components.interfaces.nsICategoryManager)
-    catman.addCategoryEntry(this.contractID, this.conversion, this.name, true, true)
+    catman.addCategoryEntry(this.contractID, this.conversion1, this.name, true, true)
+    catman.addCategoryEntry(this.contractID, this.conversion2, this.name, true, true)
   },
   
   unregisterSelf: function(compMgr, fileSpec, location) {
