@@ -1,3 +1,10 @@
+For version 0.5.4:
+* Update for Firefox 4
+* Implement services using namespace
+* Use XPCOMUtils.jsm
+* Update About box
+** Include donate button
+
 In no particular order:
 * Sidebar to manipulate the display window (Mobile simulator)
 * Set the height
