@@ -1,9 +1,18 @@
 -- Release Notes --
+Release 0.5.4, 16 January 2011
 
+* Added support for Firefox 4
+* Fixed bugs: 19056, 22002
+* Updated services to use XPCOMUtils
+* Updated About box
+* Added support for Seamonkey 2.0
+
+--
 Release 0.5.3, 22 February 2008
 
 * Added support for application/vnd.wap.multipart.mixed packaging
 
+--
 Release 0.5.2, 29 August 2007
 
 * Fixes a defect where comments are incorrectly stripped out by the Multipart Mixed handler
