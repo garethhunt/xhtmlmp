@@ -7,4 +7,5 @@ component {333c7e10-e060-4514-9e35-08d2183aee2d} components/xhtmlmp-service.js
 contract @mozilla.org/streamconv;1?from=application/vnd.wap.xhtml+xml&to=*/* {333c7e10-e060-4514-9e35-08d2183aee2d}
 
 component {1d880b4f-d091-439d-b3c4-f175966c9341} components/xhtmlmp-multipartmixed-service.js
-contract @mozilla.org/streamconv;1?from=application/application/vnd.wap.multipart.mixed&to=*/* {1d880b4f-d091-439d-b3c4-f175966c9341}
+contract @mozilla.org/streamconv;1?from=multipart/mixed&to=*/* {1d880b4f-d091-439d-b3c4-f175966c9341}
+contract @mozilla.org/streamconv;1?from=application/vnd.wap.multipart.mixed&to=*/* {1d880b4f-d091-439d-b3c4-f175966c9341}

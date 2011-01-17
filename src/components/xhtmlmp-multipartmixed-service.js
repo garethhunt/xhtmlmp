@@ -25,180 +25,154 @@
  */
 
 /* multipart/mixed -> text/xml stream converter */
-function MultipartMixedStreamConverter() {}
+if (!XHTMLMP)
+	var XHTMLMP = {};
 
-MultipartMixedStreamConverter.prototype = {
-  
-  _logger: null,
-  _initialised: false,
-  
-  init: function() {
-    if (this._initialised) { return }
-    this._logger = Components.classes["@xhtmlmp.mozdev.org/logger;1"].getService(Components.interfaces.nsISupports).wrappedJSObject
-  },
-  
-  QueryInterface: function(iid) {
-    if (iid.equals(Components.interfaces.nsISupports) ||
-      iid.equals(Components.interfaces.nsIStreamConverter) ||
-      iid.equals(Components.interfaces.nsIStreamListener) ||
-      iid.equals(Components.interfaces.nsIRequestObserver))
-      return this
-
-    throw Components.results.NS_ERROR_NO_INTERFACE
-  },
-  
-  // nsIRequest::onStartRequest
-  onStartRequest: function(aRequest, aContext) {
-    if (!this._initialised) { this.init() }
-    this._logger.debug("Entered onStartRequest")
-    
-    this.data = ''
-
-    this.uri = aRequest.QueryInterface (Components.interfaces.nsIChannel).URI.spec
-
-    this.channel = aRequest
-    this._logger.debug(this.channel.contentType)
-    
-    this.channel.contentType = "text/xml"
-    this._logger.debug(this.channel.contentType)
-
-    this.listener.onStartRequest (this.channel, aContext)
-    this._logger.debug("Exiting onStartRequest")
-  },
-  
-  // nsIRequest::onStopRequest
-  onStopRequest: function (aRequest, aContext, aStatusCode) {
-    this._logger.debug("this.data: " + this.data)
-    var tempData = this.data
-
-    // Strip out comments
-    tempData = tempData.replace (/<!(?:--.*?--\s*)?>/g,'')
+if (!XHTMLMP.MultipartStreamConverter1) {
+	Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
 	
-    this._logger.debug("stripped out comments: " + tempData)
-	
-    // Strip out multipart/mixed delimiters and information
-    tempData = tempData.replace (/\s--.*/g,'')
-    tempData = tempData.replace (/Content-Location.*/g,'')
-    tempData = tempData.replace (/Content-Type.*/g,'')
-    tempData = tempData.replace (/Content-Transfer-Encoding.*/g,'')
-    
-    this._logger.debug("stripped out multipart package boundaries: " + tempData)
-	
-    // Remove everything after the closing html tag
-    var htmlEndIndex = tempData.search(/<\/html>/)
-    this._logger.debug("Index of end tag: " + htmlEndIndex)
-    tempData = tempData.substring(0, htmlEndIndex + 7)
-    
-    // Strip leading whitespace
-    tempData = tempData.replace (/^\s+/,'')
-    
-    // Replace <html> with <html xmlns="http://www.w3.org/1999/xhtml">
-    tempData = tempData.replace (/<html>/,'<html xmlns="http://www.w3.org/1999/xhtml">')
-    
-    // Prepend </title> with [XHTML-MP]
-    tempData = tempData.replace (/<\/title>/,' [Multipart/Mixed]</title>')
-    
-    this.data = tempData
-    this._logger.debug("this.data: " + this.data)
-    
-    var targetDocument = ""
-    
-    // If there is no XML declaration, add it
-    if ( !(this.data.search(/^<\?xml version=['"]1.0['"] encoding=['"]UTF-8['"]\?>.*$/)) ) {
-    	targetDocument = "<?xml version='1.0' encoding='UTF-8'?>"
-    }
-    
-    var targetDocument = targetDocument + this.data
-    
-    this._logger.debug("targetDocument: " + targetDocument)
-
-    var sis = Components.classes["@mozilla.org/io/string-input-stream;1"].createInstance(Components.interfaces.nsIStringInputStream)
-    sis.setData (targetDocument, targetDocument.length)
-
-    // Pass the data to the main content listener
-    this.listener.onDataAvailable (this.channel, aContext, sis, 0, targetDocument.length)
-    this.listener.onStopRequest (this.channel, aContext, aStatusCode)
-  },
-  
-  // nsIStreamListener methods
-  onDataAvailable: function (aRequest, aContext, aInputStream, aOffset, aCount) {
-    this._logger.debug("Entered onDataAvailable")
-    
-    var si = Components.classes["@mozilla.org/scriptableinputstream;1"].createInstance()
-    si = si.QueryInterface(Components.interfaces.nsIScriptableInputStream)
-    si.init(aInputStream)
-    this.data += si.read(aCount)
-    
-    this._logger.debug("Exiting onDataAvailable")
-  },
-  
-  asyncConvertData: function (aFromType, aToType, aListener, aCtxt) {
-    // Store the listener passed to us
-    this.listener = aListener
-  },
-  
-  convert: function (aFromStream, aFromType, aToType, aCtxt) {
-    return aFromStream
-  }
+	XHTMLMP.MultipartStreamConverter1 = function () {};
+	XHTMLMP.MultipartStreamConverter1.prototype = {
+		classDescription: "multipart/mixed to HTML stream converter 1",
+		classID:          Components.ID("{1d880b4f-d091-439d-b3c4-f175966c9341}"),
+		contractID:       "@mozilla.org/streamconv;1?from=multipart/mixed&to=*/*",
+		
+		_xpcom_factory: {
+			createInstance: function (outer, iid) {
+				if (outer != null)
+					throw Components.results.NS_ERROR_NO_AGGREGATION;
+			
+				if (iid.equals(Components.interfaces.nsISupports) ||
+					iid.equals(Components.interfaces.nsIStreamConverter) ||
+					iid.equals(Components.interfaces.nsIStreamListener) ||
+					iid.equals(Components.interfaces.nsIRequestObserver)) {
+					return new XHTMLMP.MultipartStreamConverterBase();
+				}
+				throw Components.results.NS_ERROR_NO_INTERFACE;
+			}
+		},
+		
+		QueryInterface: XPCOMUtils.generateQI (
+			[Components.interfaces.nsIObserver,
+			Components.interfaces.nsIStreamConverter,
+			Components.interfaces.nsIStreamListener,
+			Components.interfaces.nsIRequestObserver]
+		)
+	};
 }
 
-var MultipartMixedBrowserModule = {
-  
-  cid: Components.ID("{1d880b4f-d091-439d-b3c4-f175966c9341}"),
-  conversion1: "?from=multipart/mixed&to=*/*",
-  conversion2: "?from=application/vnd.wap.multipart.mixed&to=*/*",
-  contractID: "@mozilla.org/streamconv;1",
-  name: "Multipart/Mixed to HTML stream converter",
-  
-  // This factory attribute returns an anonymous class 
-  factory: {
-    createInstance: function (outer, iid) {
-      if (outer != null)
-        throw Components.results.NS_ERROR_NO_AGGREGATION
-      
-      if (iid.equals(Components.interfaces.nsISupports) ||
-        iid.equals(Components.interfaces.nsIStreamConverter) ||
-        iid.equals(Components.interfaces.nsIStreamListener) ||
-        iid.equals(Components.interfaces.nsIRequestObserver)) {
-        
-        return new MultipartMixedStreamConverter()
-      }
-      
-      throw Components.results.NS_ERROR_NO_INTERFACE
-    }
-  },
-  
-  registerSelf: function (compMgr, fileSpec, location, type) {
-  
-    compMgr = compMgr.QueryInterface(Components.interfaces.nsIComponentRegistrar)
-    compMgr.registerFactoryLocation(this.cid, this.name, this.contractID + this.conversion1, fileSpec, location, type)
-    compMgr.registerFactoryLocation(this.cid, this.name, this.contractID + this.conversion2, fileSpec, location, type)
-    
-    var catman = Components.classes["@mozilla.org/categorymanager;1"].getService(Components.interfaces.nsICategoryManager)
-    catman.addCategoryEntry(this.contractID, this.conversion1, this.name, true, true)
-    catman.addCategoryEntry(this.contractID, this.conversion2, this.name, true, true)
-  },
-  
-  unregisterSelf: function(compMgr, fileSpec, location) {
-    aCompMgr = aCompMgr.QueryInterface(Components.interfaces.nsIComponentRegistrar)
-    aCompMgr.unregisterFactoryLocation(this.cid, aLocation)
-  },
-  
-  getClassObject: function (compMgr, cid, iid) {
-  
-    if (cid.equals(this.cid))
-      return this.factory
-    
-    if (!iid.equals(Components.interfaces.nsIFactory))
-      throw Components.results.NS_ERROR_NOT_IMPLEMENTED
-    
-    throw Components.results.NS_ERROR_NO_INTERFACE
-  },
-  
-  canUnload: function(compMgr) { return true }
+if (!XHTMLMP.MultipartStreamConverter2) {
+	Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
+	
+	XHTMLMP.MultipartStreamConverter2 = function () {};
+	XHTMLMP.MultipartStreamConverter2.prototype = {
+		classDescription: "multipart/mixed to HTML stream converter 2",
+		classID:          Components.ID("{1d880b4f-d091-439d-b3c4-f175966c9341}"),
+		contractID:       "@mozilla.org/streamconv;1?from=application/vnd.wap.multipart.mixed&to=*/*",
+		
+		_xpcom_factory: {
+			createInstance: function (outer, iid) {
+				if (outer != null)
+					throw Components.results.NS_ERROR_NO_AGGREGATION;
+			
+				if (iid.equals(Components.interfaces.nsISupports) ||
+					iid.equals(Components.interfaces.nsIStreamConverter) ||
+					iid.equals(Components.interfaces.nsIStreamListener) ||
+					iid.equals(Components.interfaces.nsIRequestObserver)) {
+					return new XHTMLMP.MultipartStreamConverterBase();
+				}
+				throw Components.results.NS_ERROR_NO_INTERFACE;
+			}
+		},
+		
+		QueryInterface: XPCOMUtils.generateQI (
+			[Components.interfaces.nsIObserver,
+			Components.interfaces.nsIStreamConverter,
+			Components.interfaces.nsIStreamListener,
+			Components.interfaces.nsIRequestObserver]
+		)
+	};
 }
 
-/* entrypoint */
-function NSGetModule(compMgr, fileSpec) {
-    return MultipartMixedBrowserModule
+if (!XHTMLMP.MultipartStreamConverterBase) {
+	
+	XHTMLMP.MultipartStreamConverterBase = function () {};
+	XHTMLMP.MultipartStreamConverterBase.prototype = {
+			
+		// nsIRequest::onStartRequest
+		onStartRequest: function(aRequest, aContext) {
+			this.data = '';
+			this.uri = aRequest.QueryInterface (Components.interfaces.nsIChannel).URI.spec;
+			this.channel = aRequest;
+			this.channel.contentType = "text/xml";
+			this.listener.onStartRequest (this.channel, aContext);
+		},
+			  
+		// nsIRequest::onStopRequest
+		onStopRequest: function (aRequest, aContext, aStatusCode) {
+			var tempData = this.data;
+
+			// Strip out comments
+			tempData = tempData.replace (/<!(?:--.*?--\s*)?>/g,'');
+
+			// Strip out multipart/mixed delimiters and information
+			tempData = tempData.replace (/^\s?--.*$/gm,'');
+			tempData = tempData.replace (/Content-Location.*/g,'');
+			tempData = tempData.replace (/Content-Type.*/g,'');
+			tempData = tempData.replace (/Content-Transfer-Encoding.*/g,'');
+
+			// Remove everything after the closing html tag
+			var htmlEndIndex = tempData.search(/<\/html>/);
+			tempData = tempData.substring(0, htmlEndIndex + 7);
+
+			// Strip leading whitespace
+			tempData = tempData.replace (/^\s+/,'');
+
+			// Replace <html> with <html xmlns="http://www.w3.org/1999/xhtml">
+			tempData = tempData.replace (/<html>/,'<html xmlns="http://www.w3.org/1999/xhtml">');
+
+			// Prepend </title> with [XHTML-MP]
+			tempData = tempData.replace (/<\/title>/,' [Multipart/Mixed]</title>');
+
+			this.data = tempData;
+
+			var targetDocument = "";
+
+			// If there is no XML declaration, add it
+			if ( !(this.data.search(/^<\?xml version=['"]1.0['"] encoding=['"]UTF-8['"]\?>.*$/)) ) {
+				targetDocument = "<?xml version='1.0' encoding='UTF-8'?>";
+			}
+
+			var targetDocument = targetDocument + this.data;
+
+			var sis = Components.classes["@mozilla.org/io/string-input-stream;1"].createInstance(Components.interfaces.nsIStringInputStream);
+			sis.setData (targetDocument, targetDocument.length);
+
+			// Pass the data to the main content listener
+			this.listener.onDataAvailable (this.channel, aContext, sis, 0, targetDocument.length);
+			this.listener.onStopRequest (this.channel, aContext, aStatusCode);
+		},
+
+		// nsIStreamListener methods
+		onDataAvailable: function (aRequest, aContext, aInputStream, aOffset, aCount) {
+			var si = Components.classes["@mozilla.org/scriptableinputstream;1"].createInstance();
+			si = si.QueryInterface(Components.interfaces.nsIScriptableInputStream);
+			si.init(aInputStream);
+			this.data += si.read(aCount);
+		},
+
+		asyncConvertData: function (aFromType, aToType, aListener, aCtxt) {
+			// Store the listener passed to us
+			this.listener = aListener;
+		},
+
+		convert: function (aFromStream, aFromType, aToType, aCtxt) {
+			return aFromStream;
+		}
+	}
 }
+
+if (XPCOMUtils.generateNSGetFactory)
+    var NSGetFactory = XPCOMUtils.generateNSGetFactory([XHTMLMP.MultipartStreamConverter1,XHTMLMP.MultipartStreamConverter2]);
+else
+    var NSGetModule = XPCOMUtils.generateNSGetModule([XHTMLMP.MultipartStreamConverter1,XHTMLMP.MultipartStreamConverter2]);

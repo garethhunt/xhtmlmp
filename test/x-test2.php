@@ -4,7 +4,7 @@
 "http://www.wapforum.org/DTD/xhtml-mobile10.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <title>Hello</title>
+    <title>XHTML Mobile Profile Test 2</title>
   </head>
   <body>
     <p>This is a basic XHTML Mobile Profile 1.0 page.  You should see <strong>[XHTML-MP]</strong> in the tab title.</p>

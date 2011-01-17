@@ -9,11 +9,12 @@ Content-Transfer-Encoding: binary
 
 <html>
   <head>
-    <title>Multipart test</title>
+    <title>Multipart Test 1</title>
   </head>
   <body>
     <!-- The content should be output without barfing on this comment -->
-    <div>The Firefox image below is part of this Multipart package.</div>
+    <p>This content is encoded using <em>multipart/mixed</em></p>
+    <p>The Firefox image below is part of this Multipart package.</p>
     <div>
       <img src="product-firefox.gif" alt="Mozilla Firefox" />
     </div>
