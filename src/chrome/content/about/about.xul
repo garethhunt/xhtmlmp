@@ -42,29 +42,33 @@
    
 <dialog buttons="accept"
         id="xhtmlmp-about-dialog"
-        title="&xhtmlmp.about.title;"
+        title="&xhtmlmp.title.about;"
+        style="width: 350px; min-height: 200px"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
-    <script type="application/x-javascript" src="chrome://xhtmlmp/content/about/about.js"/>
-
-    <vbox id="xhtmlmp-about-details">
-        <hbox>
-            <vbox>
-                <hbox>
-                    <description value="&xhtmlmp.extension.name;" class="name"/>
-                    <description value="&xhtmlmp.extension.version;" class="name"/>
-                </hbox>
-                <description value="&xhtmlmp.about.author.label;" class="title"/>
-                <description value="&xhtmlmp.author.name;" class="name"/>
-            </vbox>
-            <spacer flex="1"/>
-            <vbox>
-                <!-- <image src="chrome://xhtmlmp/content/logo.gif" width="48" height="48"/> -->
-                <spacer flex="1"/>
-            </vbox>
-        </hbox>
-        <description value="&xhtmlmp.about.home.page;" class="title"/>
-        <description onclick="xhtmlmp_visitHomePage()" value="&xhtmlmp.about.url;" class="url"/>
-    </vbox>
-    <separator class="groove" id="xhtmlmp-about-separator"/>
+    <groupbox>
+      <!-- <image src="chrome://xhtmlmp/content/logo.gif" width="48" height="48"/> -->
+      <!-- <separator flex="1" orient="horizontal"/> -->
+      <caption>&xhtmlmp.caption.about;</caption>
+      <description class="title">&xhtmlmp.label.version;: &xhtmlmp.extension.version;</description>
+      <description class="title">&xhtmlmp.label.author;: &xhtmlmp.author.name;</description>
+      
+      <separator flex="1" orient="horizontal"/>
+      <description value="&xhtmlmp.label.home.page;" class="title"/>
+      <label class="text-link" href="&xhtmlmp.url.homepage;" value="&xhtmlmp.url.homepage;"/>
+      
+      <separator flex="1" orient="horizontal"/>
+      <description class="title">&xhtmlmp.label.defects.description;</description>
+      <label class="text-link" href="&xhtmlmp.url.defects;" value="&xhtmlmp.url.defects;"/>
+      
+      <separator flex="1" orient="horizontal"/>
+      <description class="title">&xhtmlmp.label.twitter.description;</description>
+      <label class="text-link" href="&xhtmlmp.url.twitter;" value="&xhtmlmp.url.twitter;"/>
+    </groupbox>
+    
+    <groupbox>
+      <caption>&xhtmlmp.caption.contribute;</caption>
+      <description class="title">&xhtmlmp.label.contribute.description;</description>
+      <label class="text-link" href="&xhtmlmp.url.contribute;" value="&xhtmlmp.label.contribute;"/>
+    </groupbox>
 </dialog>
