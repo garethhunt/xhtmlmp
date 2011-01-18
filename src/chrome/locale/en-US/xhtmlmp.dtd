@@ -41,28 +41,24 @@
 <!ENTITY xhtmlmp.extension.version "@build.version@">
 <!ENTITY xhtmlmp.author.name "Gareth Hunt">
 
-<!-- About -->
-<!ENTITY xhtmlmp.about.author.label "Author">
-<!ENTITY xhtmlmp.about.home.page "Home Page">
-<!ENTITY xhtmlmp.about.label "About...">
-<!ENTITY xhtmlmp.about.title "About XHTML Mobile Profile">
-<!ENTITY xhtmlmp.about.url "@build.homepage@">
+<!-- Title -->
+<!ENTITY xhtmlmp.title.about "About XHTML Mobile Profile">
 
+<!-- Captions -->
+<!ENTITY xhtmlmp.caption.about "About XHTML Mobile Profile">
+<!ENTITY xhtmlmp.caption.contribute "Contribute">
 
-<!-- Options -->
-<!ENTITY xhtmlmp.options.title "Modify Headers Options">
-<!ENTITY xhtmlmp.options.general.uncheck.onclose "Deslect all selected headers when browser is closed">
-<!ENTITY xhtmlmp.options.headers.colselect.label "Select">
-<!ENTITY xhtmlmp.options.headers.colheadername.label "Header">
-<!ENTITY xhtmlmp.options.headers.colheadervalue.label "Value">
-<!ENTITY xhtmlmp.options.headers.move.down "Move Down">
-<!ENTITY xhtmlmp.options.headers.move.up "Move Up">
-<!ENTITY xhtmlmp.options.headers.add "Add...">
-<!ENTITY xhtmlmp.options.headers.delete "Delete...">
-<!ENTITY xhtmlmp.options.headers.edit "Edit...">
-<!ENTITY xhtmlmp.dialog.header.action.label "Action">
-<!ENTITY xhtmlmp.dialog.header.action.add "Add">
-<!ENTITY xhtmlmp.dialog.header.action.modify "Modify">
-<!ENTITY xhtmlmp.dialog.header.action.filter "Filter">
-<!ENTITY xhtmlmp.dialog.header.name.label "Name">
-<!ENTITY xhtmlmp.dialog.header.value.label "Value">
+<!-- Labels -->
+<!ENTITY xhtmlmp.label.author "Author">
+<!ENTITY xhtmlmp.label.version "Version">
+<!ENTITY xhtmlmp.label.home.page "Home Page:">
+<!ENTITY xhtmlmp.label.defects.description "If you have found a defect, please log it at this URL:">
+<!ENTITY xhtmlmp.label.contribute "Make a contribution">
+<!ENTITY xhtmlmp.label.contribute.description "Click the link below to make a contribution for the addon:">
+<!ENTITY xhtmlmp.label.twitter.description "Follow me on twitter for occasional updates:">
+
+<!-- URLs -->
+<!ENTITY xhtmlmp.url.homepage "@build.homepage@">
+<!ENTITY xhtmlmp.url.defects "http://xhtmlmp.mozdev.org/bugs.html">
+<!ENTITY xhtmlmp.url.twitter "http://twitter.com/byGarethHunt">
+<!ENTITY xhtmlmp.url.contribute "https://addons.mozilla.org/en-US/firefox/addon/xhtml-mobile-profile/">
